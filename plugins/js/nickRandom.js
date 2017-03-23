@@ -1,71 +1,105 @@
 $(document).ready(function() {
 
-
-    $('button.nickRandom-btn').text('New Name').on('click',function() {
 // OPTIONS
 
 // Number of names
-        var num_names = 2;
+    var num_names = 2;
 
 // Minimum size for names
-        var min_name_size = 3;
+    var min_name_size = 3;
 
 // Maximum size for names
-        var max_name_size = 8;
+    var max_name_size = 8;
 
-        var name_size;
+// Exact name size
+    var exact_name_size = false;
 
-        function letterRandomizer() {
+// Letter probabilities
+    var probabilities = {
+        a: 2,
+        e: 2,
+        i: 2,
+        o: 2,
+        u: 2,
+        y: 2,
+        w: 2,
+        q: 0.2,
+        z: 0.5,
+        x: 0.5,
+        plica: 0.5
+    };
+// END OPTIONS
 
-            var randomNum;
-            var letter;
 
-            randomNum = 97 + Math.floor(Math.random() * 34);
-            if (randomNum > 122) {
-                switch (randomNum) {
-                    case 123:
-                        letter = 'a';
-                        break;
-                    case 124:
-                        letter = 'e';
-                        break;
-                    case 125:
-                        letter = 'i';
-                        break;
-                    case 126:
-                        letter = 'o';
-                        break;
-                    case 127:
-                        letter = 'u';
-                        break;
-                    case 128:
-                        letter = 'y';
-                        break;
-                    case 129:
-                        letter = 'w';
-                        break;
-                    default:
-                        letter = '\'';
-                        break;
+    probabilities = createProbabilities(probabilities);
+
+    var max = 0;
+    for (var i = 0; i < 27; i++) {
+        max += probabilities[i];
+    }
+
+    function letterRandomizer(probabilities, max) {
+
+        var randomNum;
+        var i;
+
+        randomNum = Math.random() * max;
+
+        for (i = 0; i < 27; i++) {
+            randomNum -= probabilities[i];
+            if(randomNum <=0){
+                if(i === 26){
+                    return '\'';
                 }
-            } else {
-                letter = String.fromCharCode(randomNum);
+
+                return String.fromCharCode(i + 97);
             }
-            return letter;
         }
 
+        return null;
+    }
+
+    function createProbabilities(probabilities){
+        var letter;
+
+        var letterProbs = [];
+
+        for (var i = 0; i < 26; i++) {
+
+            letter = String.fromCharCode(i + 97);
+
+            if(probabilities.hasOwnProperty(letter)){
+                letterProbs.push(probabilities[letter]);
+            }else{
+                letterProbs.push(1);
+            }
+
+        }
+
+        if(probabilities.hasOwnProperty('plica')){
+            letterProbs.push(probabilities.plica);
+        }else{
+            letterProbs.push(1);
+        }
+
+        return letterProbs;
+    }
+
+
+    $('button.nickRandom-btn').text('New Name').on('click',function() {
+
         var name = [num_names];
-        var tempName, tempLetter, lastLetter;
+        var tempName, tempLetter, lastLetter, name_size;
         var consonant= 0, vogal= 0, plica=0;
 
         for (var i = 0; i < num_names; i++) {
 
-            name_size = (min_name_size + Math.floor(Math.random() * (max_name_size - min_name_size + 1)));
+            name_size = exact_name_size ? exact_name_size : (min_name_size + Math.floor(Math.random() * (max_name_size - min_name_size + 1)));
 
             for (var u = 0; u < name_size; u++) {
 
                 do{
-                    tempLetter=letterRandomizer();
+                    tempLetter=letterRandomizer(probabilities, max);
                     if(tempLetter=='a' || tempLetter=='e' || tempLetter=='y' || tempLetter=='i' || tempLetter=='o' || tempLetter=='w' || tempLetter=='u'){
                         vogal++;
                         consonant=0;
@@ -79,7 +113,7 @@ $(document).ready(function() {
                         vogal=0;
                         plica=0
                     }
-                }while(consonant>=3 || vogal>=3 || plica>=2 || lastLetter==tempLetter)
+                }while(consonant>=3 || vogal>=3 || plica>=2 || lastLetter===tempLetter);
                 lastLetter=tempLetter;
 
 
