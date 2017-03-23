@@ -1,92 +1,92 @@
-$(document).ready(function() {
-
 // OPTIONS
 
 // Number of names
-    var num_names = 2;
+var num_names = 2;
 
 // Minimum size for names
-    var min_name_size = 3;
+var min_name_size = 3;
 
 // Maximum size for names
-    var max_name_size = 8;
+var max_name_size = 8;
 
 // Exact name size
-    var exact_name_size = false;
+var exact_name_size = false;
 
 // Letter probabilities
-    var probabilities = {
-        a: 2,
-        e: 2,
-        i: 2,
-        o: 2,
-        u: 2,
-        y: 2,
-        w: 2,
-        q: 0.2,
-        z: 0.5,
-        x: 0.5,
-        plica: 0.5
-    };
+var probabilities = {
+    a: 2,
+    e: 2,
+    i: 2,
+    o: 2,
+    u: 2,
+    y: 2,
+    w: 2,
+    q: 0.2,
+    z: 0.5,
+    x: 0.5,
+    plica: 0.5 // -> '
+};
 // END OPTIONS
 
+var savedNames = [];
 
-    probabilities = createProbabilities(probabilities);
+probabilities = createProbabilities(probabilities);
 
-    var max = 0;
-    for (var i = 0; i < 27; i++) {
-        max += probabilities[i];
-    }
+var max = 0;
+for (var i = 0; i < 27; i++) {
+    max += probabilities[i];
+}
 
-    function letterRandomizer(probabilities, max) {
+function letterRandomizer(probabilities, max) {
 
-        var randomNum;
-        var i;
+    var randomNum;
+    var i;
 
-        randomNum = Math.random() * max;
+    randomNum = Math.random() * max;
 
-        for (i = 0; i < 27; i++) {
-            randomNum -= probabilities[i];
-            if(randomNum <=0){
-                if(i === 26){
-                    return '\'';
-                }
-
-                return String.fromCharCode(i + 97);
-            }
-        }
-
-        return null;
-    }
-
-    function createProbabilities(probabilities){
-        var letter;
-
-        var letterProbs = [];
-
-        for (var i = 0; i < 26; i++) {
-
-            letter = String.fromCharCode(i + 97);
-
-            if(probabilities.hasOwnProperty(letter)){
-                letterProbs.push(probabilities[letter]);
-            }else{
-                letterProbs.push(1);
+    for (i = 0; i < 27; i++) {
+        randomNum -= probabilities[i];
+        if(randomNum <=0){
+            if(i === 26){
+                return '\'';
             }
 
+            return String.fromCharCode(i + 97);
         }
+    }
 
-        if(probabilities.hasOwnProperty('plica')){
-            letterProbs.push(probabilities.plica);
+    return null;
+}
+
+function createProbabilities(probabilities){
+    var letter;
+
+    var letterProbs = [];
+
+    for (var i = 0; i < 26; i++) {
+
+        letter = String.fromCharCode(i + 97);
+
+        if(probabilities.hasOwnProperty(letter)){
+            letterProbs.push(probabilities[letter]);
         }else{
             letterProbs.push(1);
         }
 
-        return letterProbs;
     }
 
+    if(probabilities.hasOwnProperty('plica')){
+        letterProbs.push(probabilities.plica);
+    }else{
+        letterProbs.push(1);
+    }
 
-    $('button.nickRandom-btn').text('New Name').on('click',function() {
+    return letterProbs;
+}
+
+$(document).ready(function() {
+
+    $('button#new').on('click',function() {
 
         var name = [num_names];
         var tempName, tempLetter, lastLetter, name_size;
@@ -130,7 +130,18 @@ $(document).ready(function() {
         for(i=0;i< num_names; i++){
             fullName=fullName + name[i] +' ';
         }
-        $('div.nickRandom').text(fullName);
-    })
+        $('div#nickRandom').text(fullName);
+    });
+
+
+    $('button#save').on('click',function() {
+        var currentName = $('div#nickRandom').text();
+        $('ul#name-list').append('<li><a style="cursor: pointer; color:red" onclick="removeName(event)">X</a> '+currentName+'</li>');
+    });
+
 
 });
+
+function removeName(event) {
+    $(event.target).parent('li').remove();
+}

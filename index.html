@@ -21,11 +21,14 @@
 <body>
     <div class="container">
         <div class="container-fluid col-md-2">
-            <form>
-                <button type="button" class="btn nickRandom-btn">Click Here</button>
-            </form>
+            <button id="new" type="button" class="btn nickRandom-btn">New Name</button>
+            <button id="save" type="button" class="btn nickRandom-btn" style="margin-top:20px">Save Name</button>
         </div>
-        <div class="col-md-2 nickRandom"></div>
+        <div id="nickRandom" class="col-md-2"></div>
+        <div class="container-fluid col-md-8">
+            <ul id="name-list">
+            </ul>
+        </div>
     </div>
 
 <script type="text/javascript" src="plugins/js/jquery-1.11.1.min.js"></script>
